@@ -1,6 +1,8 @@
 import * as React from 'react';
 import type IThrowResult from '../models/IThrowResult';
 import Dice from './Dice';
+import utils from '../utils';
+import type IDice from '../models/IDice';
 
 const ScoreArea: React.FC<{
     throwHistory: IThrowResult[],
@@ -11,19 +13,43 @@ const ScoreArea: React.FC<{
         }
         return previous += (current ?? 0);
     }, 0);
-    return <div>
-        <div><b>Total: {total}</b></div>
+
+    const groupedDices = (dices: IDice[]) => {
+        const groupedDices: { throwId: string, dices: IDice[] }[] = [];
+        utils.groupBy(dices, _ => _.throwId).forEach((values, key) => {
+            groupedDices.push({ throwId: key, dices: values });
+        });
+        return groupedDices;
+    }
+
+    return <>
+    <div style={{ borderBottom: '1px solid black' }}><b>Total: {total}</b></div>
+    <div
+        style={{
+            maxHeight: "100%",
+            overflow: "auto"
+        }}
+    >
+        
         {throwHistory.map((_, index) => <div
                 key={_.throwId}
                 style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '20px'
+                    gap: '20px',
+                    borderBottom: '1px solid black'
                 }}
             >
-                <div>{index + 1}. {_.score}</div><div style={{ display: 'flex' }}>{_.dices.map(dice => <Dice dice={dice} size={2} />)}</div>
+                <div style={{ width: '20%'}}>{index + 1}. {_.score}</div>
+                <div style={{ width: '80%'}}>
+                    {groupedDices(_.dices).map(group => 
+                    <div style={{ display: 'flex'}}>
+                        {group.dices.map(dice => <Dice dice={dice} size={2} />)}
+                    </div>)}
+                </div>
         </div>)}
     </div>
+    </>
 }
 
 export default ScoreArea;

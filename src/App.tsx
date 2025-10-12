@@ -9,6 +9,7 @@ function App() {
 
   const style: React.CSSProperties = {
     display: 'flex',
+    height: '100vh',
   }
 
   const [throwHistory, setThrowHistory] = React.useState<IThrowResult[]>([]);
@@ -27,7 +28,8 @@ function App() {
     </div>
     <div
       style={{
-        width: '20vw'
+        width: '20vw',
+        padding: '2em'
       }}
     >
       <ScoreArea throwHistory={throwHistory} />

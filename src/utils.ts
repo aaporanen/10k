@@ -3,7 +3,7 @@ import { mdiDice1Outline, mdiDice2Outline, mdiDice3Outline, mdiDice4Outline, mdi
 import type IThrowResult from "./models/IThrowResult";
 
 const getRandomInteger = (min: number, max: number): number => {
-  return Math.floor(Math.random() * (max - min) ) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 const getDiceIcon = (dice: IDice): string => {
@@ -28,13 +28,13 @@ const getDiceIcon = (dice: IDice): string => {
 function groupBy<T>(list: T[], keyGetter: (item: T) => any) {
     const map = new Map<any, T[]>();
     list.forEach((item) => {
-         const key = keyGetter(item);
-         const collection = map.get(key);
-         if (!collection) {
-             map.set(key, [item]);
-         } else {
-             collection.push(item);
-         }
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
     });
     return map;
 };
@@ -51,12 +51,62 @@ const hasOfAKind = (values: number[], count: number) => {
 }
 
 const isStraight = (values: number[]) => {
-    return values.indexOf(1) != -1 
+    return values.indexOf(1) != -1
         && values.indexOf(2) != -1
         && values.indexOf(3) != -1
         && values.indexOf(4) != -1
         && values.indexOf(5) != -1
         && values.indexOf(6) != -1
+}
+
+const getSpecialThrowText = (result: IThrowResult) => {
+    const { dices } = result;
+    const diceValues = dices.map(_ => _.value);
+    const sixOfAKind = diceValues.length === 6 && new Set(diceValues).size == 1;
+    if (sixOfAKind) {
+        return "Kymppitonni!";
+    }
+    const threeAndTree = diceValues.length === 6 && new Set(diceValues).size == 2 && hasOfAKind(diceValues, 3)
+    if (threeAndTree) { // 3 + 3
+        return "3 + 3!";
+    }
+    const fourAndTwo = diceValues.length === 6 && new Set(diceValues).size == 2 && hasOfAKind(diceValues, 4)
+    if (fourAndTwo) { // 4 + 2
+        return "4 + 2!"
+    }
+    const twoAndTwoAndTwo = diceValues.length === 6 && new Set(diceValues).size == 3 && diceValues.every(value => hasOfAKind(diceValues.filter(_ => _ === value), 2));
+    if (twoAndTwoAndTwo) { // 2 + 2 + 2
+        return "2 + 2 + 2!"
+    }
+    const straight = diceValues.length === 6 && isStraight(diceValues)
+    if (straight) {
+        return "Suora!"
+    }
+    const fiveOfAKind = !sixOfAKind && diceValues.length <= 6 && hasOfAKind(diceValues, 5);
+    if (fiveOfAKind) {
+        return "Vitoset!"
+    }
+    const takeAll = diceValues.every(value => {
+        const values = diceValues.filter(_ => _ == value);
+        const hasFiveOfAKind = hasOfAKind(values, 5);
+        const hasFourOfAKind = hasOfAKind(values, 4);
+        const hasThreeOfAKind = hasOfAKind(values, 3);
+
+        const hasTwoOnes = value === 1 ? hasOfAKind(values, 2) : false;
+        const hasTwoFives = value === 5 ? hasOfAKind(values, 2) : false;
+
+        const hasOneOne = value === 1 ? hasOfAKind(values, 1) : false;
+        const hasOneFive = value === 5 ? hasOfAKind(values, 1) : false;
+
+        return hasFiveOfAKind || hasFourOfAKind || hasThreeOfAKind || hasTwoOnes || hasTwoFives || hasOneOne || hasOneFive;
+    });
+
+    if (takeAll) {
+        return "Kaikki käy!";
+    }
+
+    const nothing = calculateScore(result) === 0;
+    return nothing ? "Ja roskiin" : "";
 }
 
 const calculateScore = (result: IThrowResult) => {
@@ -79,7 +129,7 @@ const calculateScore = (result: IThrowResult) => {
         if (fourAndTwo) { // 4 + 2
             throwScore += 2000;
         }
-        const twoAndTwoAndTwo = diceValues.length === 6 && new Set(diceValues).size == 3
+        const twoAndTwoAndTwo = diceValues.length === 6 && new Set(diceValues).size == 3 && diceValues.every(value => hasOfAKind(diceValues.filter(_ => _ === value), 2));
         if (twoAndTwoAndTwo) { // 2 + 2 + 2
             throwScore += 1500;
         }
@@ -124,7 +174,7 @@ const calculateScore = (result: IThrowResult) => {
         const twoOnes = noGreaterKind && noSpecialThrow && diceValues.length <= 6 && hasOfAKind(diceValues.filter(_ => _ === 1), 2);
         if (twoOnes) {
             throwScore += 200;
-        }     
+        }
         const twoFives = noGreaterKind && noSpecialThrow && hasOfAKind(diceValues.filter(_ => _ === 5), 2);
         if (twoFives) {
             throwScore += 100;
@@ -146,5 +196,7 @@ const calculateScore = (result: IThrowResult) => {
 export default {
     getRandomInteger,
     getDiceIcon,
-    calculateScore
+    calculateScore,
+    groupBy,
+    getSpecialThrowText
 }

@@ -7,7 +7,8 @@ const Dice: React.FC<{
     dice: IDice,
     size?: number | string,
     onClick?: (dice: IDice) => void,
-}> = ({ dice, size, onClick }) => {
+    placeholder?: boolean,
+}> = ({ dice, size, onClick, placeholder }) => {
 
     return <div
         role="button"
@@ -21,6 +22,9 @@ const Dice: React.FC<{
             size={size ?? 3}
             horizontal
             vertical
+            style={{
+                visibility: placeholder ? "hidden" : "visible"
+            }}
         />
     </div>
 }

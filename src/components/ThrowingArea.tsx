@@ -71,7 +71,8 @@ const ThrowingArea: React.FC<{
         alignItems: 'center',
         height: '80vh',
         flexDirection: 'column',
-        gap: '10vh'
+        gap: '5vh',
+        justifyContent: 'center'
     }
 
     return (
@@ -82,6 +83,7 @@ const ThrowingArea: React.FC<{
                     display: 'flex',
                 }}
             >
+                {!savedDices.length && <Dice placeholder dice={{ key: "", throwId: "", value: 6 }} />}
                 {savedDices.map(_ => <Dice dice={_} onClick={handleToggleDice} />)}
             </div>
             <div
@@ -90,7 +92,13 @@ const ThrowingArea: React.FC<{
                     display: 'flex',
                 }}
             >
-                {currentThrow.dices.toSorted((a: IDice, b: IDice) => a.value - b.value).map(_ => <Dice dice={_} onClick={handleToggleDice} />)}
+                {!currentThrow.dices.length && <Dice placeholder dice={{ key: "", throwId: "", value: 6 }} />}
+                {currentThrow.dices.toSorted((a: IDice, b: IDice) => a.value - b.value).map(_ => <Dice dice={_} onClick={handleToggleDice} />)}              
+            </div>
+            <div
+                id="throw-message"
+            >
+                {!!currentThrow.dices.length && !savedDices.filter(_ => _.throwId === currentThrow.throwId).length && utils.getSpecialThrowText(currentThrow)}        
             </div>
             <div
                 id="actions"
@@ -119,7 +127,7 @@ const ThrowingArea: React.FC<{
                 <Button
                     variant='contained'
                     onClick={() => handleThrow()}
-                    disabled={!!currentThrow.throwId && !savedDices.some(_ => _.throwId === currentThrow.throwId)}
+                    disabled={(!!currentThrow.throwId && !savedDices.some(_ => _.throwId === currentThrow.throwId)) || (!!savedDices.length && utils.calculateScore({ throwId: "-", dices: savedDices }) === 0)}
                 >
                     Heitä
                 </Button>              
