@@ -29,10 +29,9 @@ const ScoreArea: React.FC<{
             maxHeight: "100%",
             overflow: "auto"
         }}
-    >
-        
+    >     
         {throwHistory.map((_, index) => <div
-                key={_.throwId}
+                key={`throw-history-${_.resultId}`}
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -43,8 +42,8 @@ const ScoreArea: React.FC<{
                 <div style={{ width: '20%'}}>{index + 1}. {_.score}</div>
                 <div style={{ width: '80%'}}>
                     {groupedDices(_.dices).map(group => 
-                    <div style={{ display: 'flex'}}>
-                        {group.dices.map(dice => <Dice dice={dice} size={2} />)}
+                    <div key={`throw-history-dices-${group.throwId}`} style={{ display: 'flex'}}>
+                        {group.dices.map(dice => <Dice key={`history-dice-${dice.key}`} dice={dice} size={2} />)}
                     </div>)}
                 </div>
         </div>)}

@@ -84,7 +84,7 @@ const ThrowingArea: React.FC<{
                 }}
             >
                 {!savedDices.length && <Dice placeholder dice={{ key: "", throwId: "", value: 6 }} />}
-                {savedDices.map(_ => <Dice dice={_} onClick={handleToggleDice} />)}
+                {savedDices.map(_ => <Dice key={_.key} dice={_} onClick={handleToggleDice} />)}
             </div>
             <div
                 id="throw"
@@ -93,7 +93,7 @@ const ThrowingArea: React.FC<{
                 }}
             >
                 {!currentThrow.dices.length && <Dice placeholder dice={{ key: "", throwId: "", value: 6 }} />}
-                {currentThrow.dices.toSorted((a: IDice, b: IDice) => a.value - b.value).map(_ => <Dice dice={_} onClick={handleToggleDice} />)}              
+                {currentThrow.dices.toSorted((a: IDice, b: IDice) => a.value - b.value).map(_ => <Dice key={_.key} dice={_} onClick={handleToggleDice} />)}              
             </div>
             <div
                 id="throw-message"
